@@ -590,6 +590,7 @@ class Blueprint
      */
     public function primary($columns, $name = null, $algorithm = null)
     {
+        $columns = $this->flipColumnForOrderingIndexes($columns);
         return $this->indexCommand('primary', $columns, $name, $algorithm);
     }
 
@@ -603,6 +604,7 @@ class Blueprint
      */
     public function unique($columns, $name = null, $algorithm = null)
     {
+        $columns = $this->flipColumnForOrderingIndexes($columns);
         return $this->indexCommand('unique', $columns, $name, $algorithm);
     }
 
@@ -616,6 +618,7 @@ class Blueprint
      */
     public function index($columns, $name = null, $algorithm = null)
     {
+        $columns = $this->flipColumnForOrderingIndexes($columns);
         return $this->indexCommand('index', $columns, $name, $algorithm);
     }
 
@@ -629,6 +632,7 @@ class Blueprint
      */
     public function fullText($columns, $name = null, $algorithm = null)
     {
+        $columns = $this->flipColumnForOrderingIndexes($columns);
         return $this->indexCommand('fulltext', $columns, $name, $algorithm);
     }
 
@@ -641,6 +645,7 @@ class Blueprint
      */
     public function spatialIndex($columns, $name = null)
     {
+        $columns = $this->flipColumnForOrderingIndexes($columns);
         return $this->indexCommand('spatialIndex', $columns, $name);
     }
 
@@ -1762,5 +1767,12 @@ class Blueprint
         return array_filter($this->columns, function ($column) {
             return (bool) $column->change;
         });
+    }
+
+    private function flipColumnForOrderingIndexes($columns)
+    {
+        if(is_array($columns) && count(array_filter(array_keys($columns), 'is_string')) > 0) return array_flip($columns);
+
+        return $columns;
     }
 }

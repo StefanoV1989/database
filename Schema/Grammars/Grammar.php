@@ -370,4 +370,30 @@ abstract class Grammar extends BaseGrammar
     {
         return $this->transactions;
     }
+
+    /**
+     * Return columnized string with order for the given command.
+     *
+     * @param  \Illuminate\Support\Fluent  $command
+     * @return string|array
+     */
+    protected function columnizeWithOrder(Fluent $command)
+    {
+        $columns = [];
+
+        foreach ($command->columns as $order => $column)
+        {
+            $ordersName = ['asc', 'desc'];
+
+            if(in_array($column, $ordersName))
+            {
+                $columns[] = $column . ' ' . $order;
+                continue;
+            }
+
+            $columns[] = $column;
+        }
+
+        return preg_replace_callback('/[\s]+(asc|desc)`/i', fn ($matches) => '` ' . $matches[1], $this->columnize($columns));
+    }
 }
